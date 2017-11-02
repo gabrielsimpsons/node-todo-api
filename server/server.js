@@ -2,7 +2,6 @@ let express = require('express')
 let bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb')
 
-
 var {mongoose} = require('./db/mongoose.js')
 var {Todo} = require('./models/todo')
 var {User} = require('./models/user')
