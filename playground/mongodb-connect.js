@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient
 
-MongoClient.connect('mongodb://localhost:27017/todoApp-db', (error, db) => {
+MongoClient.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/todoApp-db', (error, db) => {
   if (error) {
     return console.log(`Unable to connect to mongodb server: ${error}`)
   }
