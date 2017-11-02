@@ -1,10 +1,27 @@
 const expect = require('expect')
 const request = require('supertest')
+const {ObjectID} = require('mongodb')
 
 const{app} = require('./../server')
 const{Todo} = require('./../models/todo')
 
-const todos = [{text: 'todo1'},{text: 'todo2'},{text: 'todo3'},{text: 'todo4'}]
+const todos = [
+  {
+    _id: new ObjectID(),
+    text: 'todo1'
+  },
+  {
+    _id: new ObjectID(),
+    text: 'todo2'
+  },
+  {
+    _id: new ObjectID(),
+    text: 'todo3'
+  },
+  {
+    _id: new ObjectID(),
+    text: 'todo4'
+  }]
 beforeEach(done => {
   Todo.remove({}).then(() => {Todo.insertMany(todos)}).then( () => done())
 })
@@ -56,6 +73,39 @@ describe('GET /todos', () => {
       .expect(200)
       .expect(res => {
         expect(res.body.todos.length).toBe(4)
+      })
+      .end(done)
+  })
+})
+
+describe('GET /todos/:id', () => {
+
+  it('Should get a todo', done => {
+    request(app)
+      .get(`/todos/${todos[0]._id.toHexString()}`)
+      .expect(200)
+      .expect( res => {
+        expect(res.body.todo.text).toBe(todos[0].text)
+      })
+      .end(done)
+  })
+
+  it('Should return 404 when todo not faund', done => {
+    request(app)
+      .get(`/todos/${new ObjectID().toHexString()}`)
+      .expect(404)
+      .expect(res => {
+        expect(res.body.message).toBe('Todo not found')
+      })
+      .end(done)
+  })
+
+  it('Should return 400 when todo not faund', done => {
+    request(app)
+      .get(`/todos/${new ObjectID().toHexString()}111`)
+      .expect(400)
+      .expect(res => {
+        expect(res.body.message).toBe("Is not an valid id")
       })
       .end(done)
   })
