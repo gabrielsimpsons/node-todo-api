@@ -1,5 +1,6 @@
-let express = require('express')
-let bodyParser = require('body-parser')
+require('./config/config')
+const express = require('express')
+const bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb')
 
 var {mongoose} = require('./db/mongoose.js')
@@ -41,6 +42,18 @@ app.get('/todos/:id', (req, res) => {
     }
     res.send({todo})
   }).catch(e => res.status(400).send(e))
+})
+
+app.delete('/todos/:id', (req, res) => {
+  if(!ObjectID.isValid(req.params.id)){
+    res.status(400).send({message: 'Is not an valid id'})
+  }
+  Todo.findByIdAndRemove(req.params.id).then(todo => {
+    if(!todo){
+      res.status(404).send({message: 'Todo not found'})
+    }
+    res.send({todo})
+  })
 })
 
 app.listen(APP_PORT, () => {
