@@ -7,6 +7,7 @@ const _ = require('lodash')
 var {mongoose} = require('./db/mongoose.js')
 var {Todo} = require('./models/todo')
 var {User} = require('./models/user')
+var {authenticate} = require('./middleware/authenticate')
 
 const APP_PORT = process.env.PORT || 3000
 
@@ -70,6 +71,13 @@ app.post('/users', (req, res) => {
   }).catch(error => {
     res.status(400).send({message: `Error guardando usuario`, error})
   })
+})
+
+
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user)
+
 })
 
 app.listen(APP_PORT, () => {
