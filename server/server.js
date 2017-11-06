@@ -2,6 +2,7 @@ require('./config/config')
 const express = require('express')
 const bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb')
+const _ = require('lodash')
 
 var {mongoose} = require('./db/mongoose.js')
 var {Todo} = require('./models/todo')
@@ -53,6 +54,21 @@ app.delete('/todos/:id', (req, res) => {
       res.status(404).send({message: 'Todo not found'})
     }
     res.send({todo})
+  }).catch(error => {
+    res.status(400).send({message: 'Impossible to delete', error: error})
+  })
+})
+
+app.post('/users', (req, res) => {
+  let body = _.pick(req.body, ['email', 'password'])
+  let user = new User(body)
+  user.save().then(() => {
+    return user.generateAuthToken()
+    //res.send(user)
+  }).then(token => {
+    res.header('x-auth', token).send(user)
+  }).catch(error => {
+    res.status(400).send({message: `Error guardando usuario`, error})
   })
 })
 
